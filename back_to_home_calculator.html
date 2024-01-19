@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>금요일 퇴근 시간 계산기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #container {
+      text-align: center;
+    }
+
+    input {
+      margin: 10px;
+    }
+
+    #result {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>근무 시간 계산기</h2>
+
+    <label for="day1">Day 1:</label>
+    <input type="text" id="day1" placeholder="0900" required>
+    <input type="text" id="day1End" placeholder="1800" required>
+    <br>
+
+    <label for="day2">Day 2:</label>
+    <input type="text" id="day2" placeholder="0900" required>
+    <input type="text" id="day2End" placeholder="1800" required>
+    <br>
+
+    <label for="day3">Day 3:</label>
+    <input type="text" id="day3" placeholder="0900" required>
+    <input type="text" id="day3End" placeholder="1800" required>
+    <br>
+
+    <label for="day4">Day 4:</label>
+    <input type="text" id="day4" placeholder="0900" required>
+    <input type="text" id="day4End" placeholder="1800" required>
+    <br>
+	
+	<label for="day5">Day 5:</label>
+    <input type="text" id="day5" placeholder="0900" required>
+    <br>
+
+    <button onclick="calculateWorkHours()">계산하기</button>
+
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function calculateWorkHours() {
+      const day1Start = convertToTime(document.getElementById('day1').value);
+      const day1End = convertToTime(document.getElementById('day1End').value);
+      const day2Start = convertToTime(document.getElementById('day2').value);
+      const day2End = convertToTime(document.getElementById('day2End').value);
+      const day3Start = convertToTime(document.getElementById('day3').value);
+      const day3End = convertToTime(document.getElementById('day3End').value);
+      const day4Start = convertToTime(document.getElementById('day4').value);
+      const day4End = convertToTime(document.getElementById('day4End').value);
+      const day5Start = convertToTime(document.getElementById('day5').value);
+
+      const totalWorkHours =
+        calculateDayWorkHours(day1Start, day1End) +
+        calculateDayWorkHours(day2Start, day2End) +
+        calculateDayWorkHours(day3Start, day3End) +
+        calculateDayWorkHours(day4Start, day4End);
+
+      const lastDayEndTime = calculateLastDayEndTime(day5Start, totalWorkHours);
+      document.getElementById('result').innerText = `마지막 날 퇴근 시간: ${formatTime(lastDayEndTime)}`;
+    }
+
+    function convertToTime(input) {
+      const timeString = input.replace(/(\d{2})(\d{2})/, '$1:$2');
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date.getTime();
+    }
+
+    function calculateLastDayEndTime(lastDayStartTime, weekTotalWorkTime) {
+      const workHoursPerDay = 9; // 하루 근무 시간
+      const targetWeeklyHours = 45; // 주간 목표 근무 시간
+      const millisecondsInHour = 3600000; // 1시간을 밀리초로 표현
+
+      // 마지막 날 퇴근시간 계산
+      const remainingHours = targetWeeklyHours - weekTotalWorkTime;
+      const lastDayEndTime = lastDayStartTime + remainingHours * millisecondsInHour;
+
+      return lastDayEndTime;
+    }
+
+    function calculateDayWorkHours(start, end) {
+      const millisecondsInHour = 3600000; // 1시간을 밀리초로 표현
+
+      return (end - start) / millisecondsInHour;
+    }
+
+    function formatTime(timeInMilliseconds) {
+      const date = new Date(timeInMilliseconds);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+  </script>
+</body>
+</html>
